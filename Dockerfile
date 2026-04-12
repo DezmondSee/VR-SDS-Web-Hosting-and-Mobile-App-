@@ -17,10 +17,13 @@ COPY requirements.txt .
 RUN pip install --upgrade pip && \
     pip install --no-cache-dir --default-timeout=1000 -r requirements.txt
 
-# 3. Copy all files
+# 3. Download the NLP Brain for SpaCy
+RUN python -m spacy download en_core_web_sm
+
+# 4. Copy all files
 COPY . .
 
-# 4. Expose the port for the main portal
+# 5. Expose the port for the main portal
 EXPOSE 8501
 
 # Default command to run the unified portal

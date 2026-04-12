@@ -2,41 +2,64 @@ from config.db_config import get_db_connection
 import streamlit as st
 
 def login_user(username, password):
+    """
+    Direct string comparison for testing. 
+    Matches 'admin123' from schema.sql exactly.
+    """
     conn = get_db_connection()
-    if not conn: return None
-    cursor = conn.cursor(dictionary=True)
+    if not conn: 
+        return None
     
-    # Strip spaces to prevent accidental "Invalid Credentials"
-    username = username.strip()
-    password = password.strip()
-    
-    cursor.execute("SELECT * FROM users WHERE username=%s AND password_hash=%s", (username, password))
-    user = cursor.fetchone()
-    conn.close()
-    
-    # If user exists but is_active is 0 or False
-    if user and not user.get('is_active', True): 
-        return "BANNED"
+    try:
+        cursor = conn.cursor(dictionary=True)
         
-    return user
+        # .strip() removes hidden spaces that cause "Invalid Credentials"
+        u_input = str(username).strip()
+        p_input = str(password).strip()
+        
+        # Look for the user in the database
+        query = "SELECT * FROM users WHERE username = %s"
+        cursor.execute(query, (u_input,))
+        user = cursor.fetchone()
+        
+        if user:
+            # Direct check against the password_hash column
+            db_pass = str(user['password_hash']).strip()
+            
+            if p_input == db_pass:
+                if not user.get('is_active', True): 
+                    return "BANNED"
+                return user
+                
+        return None
+    except Exception as e:
+        st.error(f"Login Error: {e}")
+        return None
+    finally:
+        if conn.is_connected():
+            cursor.close()
+            conn.close()
 
-def register_user(username, password, email, sec_question, sec_answer):
+def register_user(username, password, email, sec_question, sec_answer, role="user"):
+    """Registers users without encryption for easy testing."""
     conn = get_db_connection()
     if not conn: return False
     try:
         cursor = conn.cursor()
-        # FIX: Added 'is_active' and 'role' to the INSERT statement
         cursor.execute("""
             INSERT INTO users 
             (username, password_hash, email, security_question, security_answer, is_active, role) 
-            VALUES (%s, %s, %s, %s, %s, 1, 'user')
-        """, (username.strip(), password.strip(), email.strip(), sec_question, sec_answer.lower().strip()))
+            VALUES (%s, %s, %s, %s, %s, 1, %s)
+        """, (username.strip(), password.strip(), email.strip(), sec_question, sec_answer.lower().strip(), role))
         conn.commit()
         return True
     except Exception as e:
-        st.error(f"🚨 DATABASE ERROR: {e}")
+        st.error(f"Registration Error: {e}")
         return False
-    finally: conn.close()
+    finally: 
+        if conn.is_connected():
+            cursor.close()
+            conn.close()
 
 def get_security_question(username):
     conn = get_db_connection()

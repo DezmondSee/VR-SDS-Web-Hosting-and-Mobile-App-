@@ -1,30 +1,54 @@
-/* Dark background */
-.stApp { background-color: #0E1117; color: #FAFAFA; }
+/* =========================================
+   VR-SDS ADMIN PORTAL - PREMIUM LIGHT THEME
+   ========================================= */
 
-/* Blue enterprise buttons */
-.stButton>button { background-color: #1F77B4; color: white; border: none; border-radius: 5px; width: 100%; }
-
-/* Perfect Contrast for Dark Theme Text Boxes */
-.stTextInput input { background-color: #1A1C23 !important; color: #FFFFFF !important; border: 1px solid #4DA8DA !important; }
-
-/* Fix: Force all Streamlit labels and markdown to be dark grey/black */
-label[data-testid="stWidgetLabel"] p {
-    color: #31333F !important;
-    font-weight: 500;
+/* 1. Global Background (Clean White/Grey Gradient) */
+.stApp {
+    background: linear-gradient(135deg, #f4f7f6 0%, #ffffff 100%) !important;
 }
 
-.stMarkdown p, .stMarkdown h1, .stMarkdown h2, .stMarkdown h3 {
-    color: #31333F !important;
+/* 2. Make all standard text readable (Black) */
+h1, h2, h3, h4, h5, h6, p, label, span {
+    color: #000000 !important;
 }
 
-div[data-baseweb="tab-list"] button p {
-    color: #31333F !important;
+/* 3. Style the Metric Boxes (Users, Scams Blocked, etc.) */
+div[data-testid="metric-container"] {
+    background-color: #ffffff !important;
+    border: 1px solid #e0e0e0 !important;
+    border-radius: 12px !important;
+    padding: 20px !important;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05) !important;
 }
 
-.stTextInput input {
-    color: #31333F !important;
+/* Metric Label Text (e.g. "Registered Users") */
+div[data-testid="metric-container"] label {
+    color: #666666 !important;
+    font-weight: 600 !important;
+    font-size: 14px !important;
 }
 
-div[data-baseweb="select"] div {
-    color: #31333F !important;
+/* Metric Number Text */
+div[data-testid="metric-container"] div[data-testid="stMetricValue"] {
+    color: #2E66FF !important; /* Beautiful Blue for the numbers */
+    font-weight: 800 !important;
+}
+
+/* 4. Glassmorphism for Admin Login Box */
+.block-container {
+    background: rgba(255, 255, 255, 0.95) !important; 
+    border-radius: 20px !important;
+    padding: 2.5rem !important;
+}
+
+/* 5. Buttons */
+.stButton>button {
+    background: #2E66FF !important;
+    color: white !important;
+    border-radius: 12px !important;
+    font-weight: bold !important;
+    border: none !important;
+}
+.stButton>button * {
+    color: white !important;
 }

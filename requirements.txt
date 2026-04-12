@@ -1,10 +1,20 @@
+# --- Core Web & Database ---
 streamlit
 mysql-connector-python
+bcrypt
+
+# --- Data Processing ---
 pandas
 numpy
-librosa
+
+# --- Machine Learning & Audio Engine ---
+librosa==0.10.1
+soundfile==0.12.1
+spacy==3.7.2
+SpeechRecognition==3.10.1
 joblib
 scikit-learn
+
+# --- Real-Time Hardware Integration ---
 pyaudio
 sounddevice
-numpy

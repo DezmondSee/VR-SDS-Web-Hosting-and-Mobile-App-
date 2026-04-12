@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS users (
     username VARCHAR(50) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
-    role ENUM('admin', 'user') DEFAULT 'user',
+    role VARCHAR(50) DEFAULT 'user', -- 🔒 CHANGED: Now accepts specific job titles!
     is_active TINYINT(1) DEFAULT 1,
     security_question VARCHAR(255),
     security_answer VARCHAR(255),
@@ -59,6 +59,10 @@ CREATE TABLE IF NOT EXISTS trusted_contacts (
 );
 
 -- Phase 3: Initial Data
+-- 🔒 CHANGED: Injected the 3 specific separation-of-duties Admin accounts
 INSERT INTO users (username, password_hash, email, role, is_active) 
-VALUES ('admin', 'admin123', 'admin@uum.edu.my', 'admin', 1)
-ON DUPLICATE KEY UPDATE username=username;
+VALUES 
+('sys_admin', 'admin123', 'sys@uum.edu.my', 'System Administrator', 1),
+('sec_admin', 'admin123', 'sec@uum.edu.my', 'Security Analyst', 1),
+('res_admin', 'admin123', 'res@uum.edu.my', 'Research Lead', 1)
+ON DUPLICATE KEY UPDATE role=VALUES(role);
