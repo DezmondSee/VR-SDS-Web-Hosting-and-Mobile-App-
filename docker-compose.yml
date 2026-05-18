@@ -4,15 +4,18 @@ services:
     container_name: vrsds_db_container
     restart: always
     environment:
-      # Using your exact credentials from previous files
-      MYSQL_ROOT_PASSWORD: Wnq57177
+      MYSQL_ROOT_PASSWORD: root_password
       MYSQL_DATABASE: vrsds_enterprise
+      MYSQL_USER: dezmond_admin
+      MYSQL_PASSWORD: password123
     ports:
-      - "3307:3306"
+      - "3310:3306"  # Laptop uses 3310, Docker uses 3306
     volumes:
-      - ./mysql_data:/var/lib/mysql
-      - ./database/schema.sql:/docker-entrypoint-initdb.d/init.sql
-    command: --init-file /docker-entrypoint-initdb.d/init.sql
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
 
   vrsds_portal:
     build: .
@@ -21,11 +24,19 @@ services:
       - "8501:8501"
     environment:
       - DB_HOST=db
+      - DB_PORT=3306
+      - DB_USER=dezmond_admin
+      - DB_PASSWORD=password123
+      - DB_NAME=vrsds_enterprise
     depends_on:
-      - db
-    # --- UPDATED COMMAND WITH 5GB LIMIT ---
+      db:
+        condition: service_healthy
     command: >
       streamlit run main.py 
       --server.port=8501 
       --server.address=0.0.0.0 
       --server.maxUploadSize=5120
+    restart: always
+
+volumes:
+  mysql_data:

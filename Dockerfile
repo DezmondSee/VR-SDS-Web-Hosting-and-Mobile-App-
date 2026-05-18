@@ -1,30 +1,30 @@
-FROM python:3.9-slim
+FROM python:3.10-slim
 
 WORKDIR /app
 
-# 1. Install system dependencies for audio and MySQL
-RUN apt-get update --fix-missing && \
-    apt-get install -y --no-install-recommends --fix-missing \
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libasound2-dev \
     libsndfile1 \
     ffmpeg \
     default-libmysqlclient-dev \
-    build-essential \
     portaudio19-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# 2. Upgrade pip and install requirements with a higher timeout
+# Install requirements
 COPY requirements.txt .
-RUN pip install --upgrade pip && \
-    pip install --no-cache-dir --default-timeout=1000 -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
-# 3. Download the NLP Brain for SpaCy
-RUN python -m spacy download en_core_web_sm
+# Stable spaCy download
+RUN pip install https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.1/en_core_web_sm-3.7.1.tar.gz
 
-# 4. Copy all files
+# Copy project including 'models' folder
 COPY . .
 
-# 5. Expose the port for the main portal
+# Force permissions for the AI brain
+RUN chmod -R 777 /app/models
+
 EXPOSE 8501
 
-# Default command to run the unified portal
 CMD ["streamlit", "run", "main.py", "--server.port=8501", "--server.address=0.0.0.0"]

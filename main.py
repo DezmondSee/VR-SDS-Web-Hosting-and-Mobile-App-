@@ -3,12 +3,11 @@ import streamlit as st
 def main():
     st.set_page_config(page_title="VR-SDS Multi-Portal", layout="centered")
 
+    # Initialize portal session state
     if 'portal' not in st.session_state:
         st.session_state['portal'] = None
-    if 'admin_role' not in st.session_state:
-        st.session_state['admin_role'] = None
 
-    # Step 1: Portal Selection
+    # --- STEP 1: PORTAL SELECTION ---
     if st.session_state['portal'] is None:
         st.title("🛡️ VR-SDS Scam Detection System")
         st.subheader("Select Access Portal")
@@ -23,22 +22,7 @@ def main():
                 st.session_state['portal'] = 'admin'
                 st.rerun()
 
-    # Step 2: Handle Admin Role Selection
-    elif st.session_state['portal'] == 'admin' and st.session_state['admin_role'] is None:
-        st.title("🔑 Admin Access")
-        role = st.selectbox("Select Admin Type:", [
-            "System Administrator", 
-            "Security Analyst", 
-            "Research Lead"
-        ])
-        if st.button("Confirm Role & Login"):
-            st.session_state['admin_role'] = role
-            st.rerun()
-        if st.button("⬅️ Back"):
-            st.session_state['portal'] = None
-            st.rerun()
-
-    # Step 3: Launch Selected App Logic
+    # --- STEP 2: LAUNCH PORTAL LOGIC ---
     else:
         if st.session_state['portal'] == 'admin':
             import admin_app
@@ -46,6 +30,15 @@ def main():
         else:
             import user_app
             user_app.render_logic()
+
+        # --- UPDATED: SIDEBAR ONLY SHOWS AFTER LOGIN ---
+        if st.session_state.get('logged_in'):
+            st.sidebar.divider()
+            if st.sidebar.button("🔄 Switch Portal / Logout", use_container_width=True):
+                # Clear all session data to return to the start
+                for key in list(st.session_state.keys()):
+                    del st.session_state[key]
+                st.rerun()
 
 if __name__ == "__main__":
     main()

@@ -1,19 +1,18 @@
 import mysql.connector
 import os
-import time
 
 def get_db_connection():
-    # Retry logic for Docker (Database takes time to start up)
-    retries = 5
-    while retries > 0:
-        try:
-            return mysql.connector.connect(
-                host=os.getenv("DB_HOST", "db"),
-                user=os.getenv("DB_USER", "root"),
-                password=os.getenv("DB_PASSWORD", "Wnq57177"),
-                database=os.getenv("DB_NAME", "vrsds_enterprise")
-            )
-        except mysql.connector.Error:
-            retries -= 1
-            time.sleep(2)
-    return None
+    try:
+        # When running in Docker, we use the service name 'db' 
+        # and the internal port 3306.
+        conn = mysql.connector.connect(
+            host=os.getenv('DB_HOST', 'db'),
+            port=int(os.getenv('DB_PORT', 3306)), 
+            user=os.getenv('DB_USER', 'dezmond_admin'),
+            password=os.getenv('DB_PASSWORD', 'password123'),
+            database=os.getenv('DB_NAME', 'vrsds_enterprise')
+        )
+        return conn
+    except mysql.connector.Error as err:
+        print(f"Error: {err}")
+        return N

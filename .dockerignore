@@ -1,15 +1,9 @@
-# Ignore heavy datasets and models
+# Ignore heavy data but KEEP your .pkl and .npy files
+mysql_data/
 dataset/
-models/
-*.npy
-*.pkl
-*.wav
-
-# Ignore Python and Git cache
-__pycache__/
-*.pyc
 venv/
 .git/
-
-# ADD THIS LINE:
-mysql_data/
+__pycache__/
+.env
+*.mp4
+*.zip
