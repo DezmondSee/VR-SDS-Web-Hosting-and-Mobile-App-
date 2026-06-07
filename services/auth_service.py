@@ -54,7 +54,8 @@ def register_user(username, password, email, sec_question, sec_answer, role="use
         conn.commit()
         return True
     except Exception as e:
-        st.error(f"Registration Error: {e}")
+        import streamlit as st
+        st.error(f"REAL DATABASE ERROR: {e}")
         return False
     finally: 
         if conn.is_connected():

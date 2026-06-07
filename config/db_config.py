@@ -15,4 +15,4 @@ def get_db_connection():
         return conn
     except mysql.connector.Error as err:
         print(f"Error: {err}")
-        return N
+        return None

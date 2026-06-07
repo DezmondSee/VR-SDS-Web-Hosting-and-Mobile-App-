@@ -1,5 +1,6 @@
 import streamlit as st
 import os
+import glob
 import pandas as pd
 import time
 from controllers import user_controller
@@ -110,19 +111,28 @@ def render(user):
         st.divider()
         st.markdown("### 📞 Live Detection Log")
         if st.session_state.shield_on:
-            st.success("🛰️ Connected to Hardware. Monitoring root folder for incoming_call.wav...")
+            st.success("🛰️ Connected to Hardware. Monitoring root folder for incoming .wav or .mp3 files...")
             
-            # Watcher Logic: Automatically detects signals from the hardware
-            if os.path.exists("incoming_call.wav"):
-                with st.status("🚨 CALL DETECTED: Analyzing in Real-Time...", expanded=True):
-                    results = analyze_audio_file("incoming_call.wav")
+            # Watcher Logic: Automatically detects ANY .wav or .mp3 file in the folder
+            audio_files = glob.glob("*.wav") + glob.glob("*.mp3")
+            
+            if audio_files:
+                # Grab the most recently added file to process
+                latest_file = max(audio_files, key=os.path.getctime)
+                
+                with st.status(f"🚨 CALL DETECTED ({latest_file}): Analyzing in Real-Time...", expanded=True):
+                    results = analyze_audio_file(latest_file)
                     if results["verdict"] == "SCAM":
                         st.error(f"‼️ SCAM DETECTED: {results['scam_probability']}% Risk")
                         st.info("🔍 **Reasoning:** Unusual pacing and red-flag keywords detected.")
                     else:
                         st.success(f"✅ CALL VERIFIED: Safe ({results['scam_probability']}%).")
-                    save_scan_result(user['user_id'], "RealTime_Intercept.wav", results['scam_probability'], results['verdict'])
-                os.remove("incoming_call.wav") # Cleanup
+                    
+                    # Save the actual dynamic filename to the database
+                    save_scan_result(user['user_id'], latest_file, results['scam_probability'], results['verdict'])
+                
+                # Cleanup the specific file that was just scanned
+                os.remove(latest_file) 
             else:
                 time.sleep(1)
                 st.rerun()

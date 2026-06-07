@@ -12,6 +12,7 @@ def save_scan_result(user_id, file_name, scam_probability, prediction):
             INSERT INTO scan_results (user_id, file_name, scam_probability, prediction) 
             VALUES (%s, %s, %s, %s)
         """
+        # Ensure scam_probability is cast to float to match the database schema
         cursor.execute(query, (user_id, file_name, float(scam_probability), prediction))
         conn.commit()
         return True
