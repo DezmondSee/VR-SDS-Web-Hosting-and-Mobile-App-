@@ -8,9 +8,9 @@ pandas
 numpy
 
 # --- Machine Learning & Audio Engine ---
-librosa==0.10.1
-soundfile==0.12.1
-spacy==3.7.2
+librosa
+soundfile
+spacy
 SpeechRecognition==3.10.1
 joblib
 scikit-learn
@@ -18,3 +18,5 @@ scikit-learn
 # --- Real-Time Hardware Integration ---
 pyaudio
 sounddevice
+
+python-dotenv

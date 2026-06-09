@@ -1,9 +1,0 @@
-# Ignore heavy data but KEEP your .pkl and .npy files
-mysql_data/
-dataset/
-venv/
-.git/
-__pycache__/
-.env
-*.mp4
-*.zip

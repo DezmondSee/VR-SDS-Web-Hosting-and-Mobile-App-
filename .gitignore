@@ -9,13 +9,7 @@ dataset/
 *.flac
 *.csv
 
-# 2. Ignore heavy AI model files (Brains & Data Arrays)
-models/
-*.pkl
-*.npy
-*.h5
-
-# 3. Ignore Python cache and virtual environments
+# 2. Ignore Python cache and virtual environments
 __pycache__/
 *.pyc
 *.pyo
@@ -23,12 +17,12 @@ venv/
 env/
 .venv/
 
-# 4. Ignore Docker Database Storage (Prevents leaking user data)
+# 3. Ignore Docker Database Storage (Prevents leaking user data)
 mysql_data/
 
-# 5. Ignore Environment Variables (Security best practice)
+# 4. Ignore Environment Variables (Security best practice)
 .env
 
-# 6. Ignore OS-generated hidden files
+# 5. Ignore OS-generated hidden files
 .DS_Store
 Thumbs.db
