@@ -1,24 +1,18 @@
 import streamlit as st
-from services.auth_service import login_user, register_user, get_security_question
+from services.auth_service import login_user, register_user, get_security_question, reset_password
 
 def load_css(file_name):
-    """Loads the CSS file for Glassmorphism design."""
     try:
         with open(file_name) as f:
             st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
     except Exception as e:
-        st.error(f"Could not load CSS: {e}")
+        pass 
 
 def render(title="📱 VR-SDS<br>Scanner", is_admin_portal=False):
-    # --- NEW: CSS TO REMOVE SIDEBAR DURING LOGIN ---
     st.markdown("""
         <style>
-            [data-testid="stSidebar"] {
-                display: none !important;
-            }
-            [data-testid="stSidebarNav"] {
-                display: none !important;
-            }
+            [data-testid="stSidebar"] { display: none !important; }
+            [data-testid="stSidebarNav"] { display: none !important; }
         </style>
     """, unsafe_allow_html=True)
 
@@ -74,28 +68,31 @@ def render(title="📱 VR-SDS<br>Scanner", is_admin_portal=False):
                     st.error("❌ Invalid Admin Code.")
                 else:
                     if register_user(nu, np, ne, sec_q, sec_a, selected_role):
-                        st.success(f"✅ {selected_role} Registration Successful!")
+                        st.success(f"✅ {selected_role} Registration Successful! Please Sign In.")
                     else:
-                        st.error("❌ Registration failed.")
+                        st.error("❌ Registration failed. Username may already exist.")
             else:
                 st.warning("⚠️ All fields required.")
 
     # --- FORGOT PASSWORD TAB ---
     with tab3:
         st.markdown("<h3 style='color: #000000; font-weight: bold;'>Reset Password</h3>", unsafe_allow_html=True)
-        forgot_u = st.text_input("Enter Username")
+        forgot_u = st.text_input("Enter Username to find your account")
+        
         if forgot_u:
             q = get_security_question(forgot_u)
             if q:
-                st.info(f"Question: {q}")
+                st.info(f"**Security Question:** {q}")
                 ans = st.text_input("Your Answer", key="reset_ans")
+                new_p = st.text_input("Enter New Password", type="password", key="reset_p")
+                
                 if st.button("Reset Password", use_container_width=True):
-                    st.info("Reset successful (Logic simulated).")
-            else:
-                st.error("User not found.")
-
-    # --- NEW: BACK BUTTON (Inside main container since sidebar is hidden) ---
-    st.divider()
-    if st.button("⬅️ Back to Portal Selection", use_container_width=True):
-        st.session_state['portal'] = None
-        st.rerun()
+                    if ans and new_p:
+                        if reset_password(forgot_u, ans, new_p):
+                            st.success("✅ Password reset successfully! You can now sign in.")
+                        else:
+                            st.error("❌ Incorrect security answer.")
+                    else:
+                        st.warning("⚠️ Please provide both your answer and a new password.")
+            elif forgot_u.strip() != "":
+                st.error("User not found in database.")
