@@ -1,4 +1,9 @@
 import mysql.connector
+import os
+from dotenv import load_dotenv
+
+# This tells Python to open your .env file and load the variables!
+load_dotenv()
 
 def get_db_connection():
     try:
@@ -11,5 +16,6 @@ def get_db_connection():
         )
         return conn
     except Exception as e:
-        print(f"Database connection failed: {e}")
+        import streamlit as st
+        st.error(f"Database connection failed: {e}")
         return None
